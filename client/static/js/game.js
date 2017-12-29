@@ -1,11 +1,11 @@
-var game = new Phaser.Game(640, 512, Phaser.CANVAS, 'phaser-example', { preload: preload, create: create, update: update, render: render });
+var game = new Phaser.Game(320, 320, Phaser.CANVAS, 'phaser-example', { preload: preload, create: create, update: update, render: render });
 
 function preload() {
 	
-	game.load.tilemap('map', 'maps/testpurple.json', null, Phaser.Tilemap.TILED_JSON);
-	game.load.image('purplesky2', 'img/purplesky2.png');
-	game.load.image('player', 'img/penguin4.png', 32, 32);
-    game.load.image('ice', 'img/cloud.png', 32, 32);
+	game.load.tilemap('map', 'maps/purplesky3.json', null, Phaser.Tilemap.TILED_JSON);
+	game.load.image('purpleskyset', 'img/purplesky3.png');
+	game.load.spritesheet('player', 'img/penguin4.png', 32, 32);
+    game.load.spritesheet('ice', 'img/cloud.png', 32, 32);
 }
 
 var cursors;
@@ -23,7 +23,7 @@ function create() {
 	game.physics.startSystem(Phaser.Physics.ARCADE);
 
 	map = game.add.tilemap('map');
-	map.addTilesetImage('purplesky2', 'purplesky2');
+	map.addTilesetImage('purpleskyset', 'purpleskyset');
 
 
 	backgroundLayer = map.createLayer('backgroundLayer');
@@ -54,16 +54,20 @@ function create() {
 
     }
 
-    ice = game.add.physicsGroup()
-    var findice = getObjects("ice")  
-    for (var a = 0; a < findice.length; a ++){
-        var s = ice.create(findice[a].x, findice[a].y, 'ice')
-        s.body.mass = -100
-        s.body.allowGravity = false
-    }    
+    // ice = game.add.physicsGroup()
+    // var findice = getObjects("ice")  
+    // for (var a = 0; a < findice.length; a ++){
+    //     var s = ice.create(findice[a].x, findice[a].y, 'ice')
+    //     s.body.mass = -100
+    //     s.body.allowGravity = false
+    //     s.body.checkCollision.left = false
+    //     s.body.checkCollision.right = false
+    //     s.body.checkCollision.down = false
+    //     s.body.immovable = true
+    // }    
     
     game.physics.enable(player);
-    game.physics.enable(ice);
+    // game.physics.enable(ice);
    
     game.physics.arcade.gravity.y = 250;
 
@@ -80,14 +84,15 @@ function create() {
 function update() {
 
 
-game.physics.arcade.collide(ice, groundLayer);
+// game.physics.arcade.collide(ice, groundLayer);
 game.physics.arcade.collide(player, groundLayer);
+// game.physics.arcade.collide(player, ice);
 
     player.body.velocity.x = 0;
 
     if (cursors.up.isDown)
     {
-        if (player.body.onFloor())
+        if (player.body.onFloor() || player.body.touching.down)
         {
             player.body.velocity.y = -200;
         }
@@ -103,16 +108,16 @@ game.physics.arcade.collide(player, groundLayer);
     }
 
 
-game.physics.arcade.overlap(player, ice, collectIce, null)
+// game.physics.arcade.collide(player, ice, dropIce, null)
 
-    function collectIce(player, ice){
-        console.log('overlap with ice')
-        // score += 1
-        // scoreText = score
-        var x = ice.x
-        var y = ice.y
-        ice.body.allowGravity = true
-    } 
+//     function dislodgeIce(player, ice){
+//         setTimeout(function(){dropIce(player, ice)},8000, false)
+        
+//     } 
+
+//     function dropIce(player, ice){
+//         ice.body.allowGravity = true
+//     }
 
 }
 
