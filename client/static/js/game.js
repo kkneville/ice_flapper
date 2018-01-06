@@ -1,11 +1,13 @@
-var game = new Phaser.Game(320, 320, Phaser.CANVAS, 'phaser-example', { preload: preload, create: create, update: update, render: render });
+var game = new Phaser.Game(384, 384, Phaser.CANVAS, 'phaser-example', { preload: preload, create: create, update: update, render: render });
 
 function preload() {
 	
 	game.load.tilemap('map', 'maps/purplesky3.json', null, Phaser.Tilemap.TILED_JSON);
-	game.load.image('purpleskyset', 'img/purplesky3.png');
+	game.load.image('purpleskyset', 'img/purpleskyset.png');
 	game.load.spritesheet('player', 'img/penguin4.png', 32, 32);
     game.load.spritesheet('ice', 'img/cloud.png', 32, 32);
+    game.load.spritesheet('smallcloud', 'img/smallcloud.png', 64, 32);
+    game.load.spritesheet('tinycloud', 'img/tinycloud.png', 32, 32);
 }
 
 var cursors;
@@ -16,7 +18,10 @@ var backgroundLayer;
 var groundLayer;
 var sprite;
 var ice;
-
+var tinycloud;
+var smallcloud;
+var clouds;
+var clouds2;
 
 function create() {
 
@@ -27,6 +32,7 @@ function create() {
 
 
 	backgroundLayer = map.createLayer('backgroundLayer');
+    foregroundLayer = map.createLayer('foregroundLayer');
 	groundLayer = map.createLayer('groundLayer');
     
 	groundLayer.resizeWorld();
@@ -36,6 +42,15 @@ function create() {
 
 	player = game.add.sprite(0, 1700, 'player');
     player.frame = 1
+
+    game.physics.enable(player);
+    // game.physics.enable(ice);
+   
+    game.physics.arcade.gravity.y = 250;
+
+    player.body.bounce.y = 0.2;
+    player.body.linearDamping = 1;
+    player.body.collideWorldBounds = true;
 
 
     function getObjects(spritename){
@@ -66,14 +81,36 @@ function create() {
     //     s.body.immovable = true
     // }    
     
-    game.physics.enable(player);
-    // game.physics.enable(ice);
-   
-    game.physics.arcade.gravity.y = 250;
 
-    player.body.bounce.y = 0.2;
-    player.body.linearDamping = 1;
-    player.body.collideWorldBounds = true;
+    clouds = game.add.physicsGroup()
+    var findClouds = getObjects('cloud')
+    for (var a = 0; a < findClouds.length; a ++){
+        var s = clouds.create(findClouds[a].x, findClouds[a].y, 'smallcloud')
+        s.body.allowGravity = false
+        s.body.velocity.setTo(100,0)
+        s.body.collideWorldBounds = true
+        s.body.bounce.set(1)
+    }
+
+    game.physics.enable(clouds, Phaser.Physics.ARCADE);
+    
+    
+    clouds2 = game.add.physicsGroup()
+    var findClouds2 = getObjects('cloud2')
+    for (var a = 0; a < findClouds2.length; a ++){
+        var s = clouds2.create(findClouds2[a].x, findClouds2[a].y, 'tinycloud')
+        s.body.mass = 1
+        s.body.allowGravity = false
+        s.body.velocity.setTo(200,0)
+        s.body.collideWorldBounds = true
+        s.body.bounce.set(1)
+    }
+
+    game.physics.enable(clouds2, Phaser.Physics.ARCADE);
+    
+    
+
+
 
     game.camera.follow(player);
 
@@ -86,7 +123,10 @@ function update() {
 
 // game.physics.arcade.collide(ice, groundLayer);
 game.physics.arcade.collide(player, groundLayer);
-// game.physics.arcade.collide(player, ice);
+game.physics.arcade.collide(player, clouds);
+game.physics.arcade.collide(player, clouds2);
+game.physics.arcade.collide(clouds, foregroundLayer);
+game.physics.arcade.collide(clouds2, foregroundLayer);
 
     player.body.velocity.x = 0;
 
@@ -107,17 +147,6 @@ game.physics.arcade.collide(player, groundLayer);
         player.body.velocity.x = 150;
     }
 
-
-// game.physics.arcade.collide(player, ice, dropIce, null)
-
-//     function dislodgeIce(player, ice){
-//         setTimeout(function(){dropIce(player, ice)},8000, false)
-        
-//     } 
-
-//     function dropIce(player, ice){
-//         ice.body.allowGravity = true
-//     }
 
 }
 
