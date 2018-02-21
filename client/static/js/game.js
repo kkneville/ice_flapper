@@ -32,7 +32,7 @@ function create() {
 
 
 	backgroundLayer = map.createLayer('backgroundLayer');
-    foregroundLayer = map.createLayer('foregroundLayer');
+   	 foregroundLayer = map.createLayer('foregroundLayer');
 	groundLayer = map.createLayer('groundLayer');
     
 	groundLayer.resizeWorld();
@@ -41,7 +41,7 @@ function create() {
 
 
 	player = game.add.sprite(0, 1700, 'player');
-    player.frame = 1
+    	player.frame = 1
 
     game.physics.enable(player);
     // game.physics.enable(ice);
@@ -69,6 +69,8 @@ function create() {
 
     }
 
+	
+// the idea was to have ice that falls away after you jump off of it but in practice the ice wasn't jump off able. a time delay might serve as a work around.	
     // ice = game.add.physicsGroup()
     // var findice = getObjects("ice")  
     // for (var a = 0; a < findice.length; a ++){
